@@ -54,6 +54,8 @@ exports.getdata = (req, res) => {
             if (!req.query.startDate || !req.query.endDate) {
                 startDate = dateformatter("2023-02-14 15:39:47");
                 endDate = dateformatter(Date.now());
+                console.log(startDate);
+                console.log(endDate);
             } else {
                 startDate = dateformatter(req.query.startDate);
                 endDate = dateformatter(req.query.endDate);
@@ -70,13 +72,13 @@ exports.getdata = (req, res) => {
                 where: {
                     [Op.or]: [
                         {
-                            action_type: {
-                                [Op.like]: `%${action_type}%`,
+                            created_at: {
+                                [Op.between]: [startDate, endDate],
                             },
                         },
                         {
-                            created_at: {
-                                [Op.between]: [startDate, endDate],
+                            action_type: {
+                                [Op.like]: `%${action_type}%`,
                             },
                         },
                     ],
