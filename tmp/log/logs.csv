@@ -1,0 +1,13 @@
+{"user_id":"111","action_type":"reset password","action_description":"password changed","created_at":"2023-02-14T10:09:47.000Z"}
+{"user_id":"112","action_type":"login","action_description":"logged in","created_at":"2023-02-14T10:10:34.000Z"}
+{"user_id":"345","action_type":"door selected","action_description":"doormodel selected","created_at":"2023-02-14T10:25:11.000Z"}
+{"user_id":"3455","action_type":"added to favorites","action_description":"tmp234","created_at":"2023-02-14T10:30:43.000Z"}
+{"user_id":"2345","action_type":"genie selected","action_description":"screw selected","created_at":"2023-02-14T10:49:35.000Z"}
+{"user_id":"1123","action_type":"logout","action_description":"user logged out successfully","created_at":"2023-02-14T10:50:05.000Z"}
+{"user_id":"1123","action_type":"logout","action_description":"user logged out successfully","created_at":"2023-02-14T10:50:05.000Z"}
+{"user_id":"111","action_type":"reset password","action_description":"password changed","created_at":"2023-02-14T10:09:47.000Z"}
+{"user_id":"112","action_type":"login","action_description":"logged in","created_at":"2023-02-14T10:10:34.000Z"}
+{"user_id":"345","action_type":"door selected","action_description":"doormodel selected","created_at":"2023-02-14T10:25:11.000Z"}
+{"user_id":"3455","action_type":"added to favorites","action_description":"tmp234","created_at":"2023-02-14T10:30:43.000Z"}
+{"user_id":"2345","action_type":"genie selected","action_description":"screw selected","created_at":"2023-02-14T10:49:35.000Z"}
+{"user_id":"1123","action_type":"logout","action_description":"user logged out successfully","created_at":"2023-02-14T10:50:05.000Z"}

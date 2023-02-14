@@ -1,5 +1,7 @@
 const db = require("../model");
 // const DATE_FORMATER = require("dateformat");
+const path = require("path");
+const rfs = require("rotating-file-stream");
 const User = db.users;
 const Op = db.Sequelize.Op;
 exports.adduserinfo = (req, res) => {
@@ -20,6 +22,25 @@ exports.adduserinfo = (req, res) => {
             });
         });
 };
+function padTo2Digits(num) {
+    return num.toString().padStart(2, "0");
+}
+function dateformatter(date) {
+    var d = new Date(date);
+    return (
+        [
+            d.getFullYear(),
+            padTo2Digits(d.getMonth() + 1),
+            padTo2Digits(d.getDate()),
+        ].join("-") +
+        " " +
+        [
+            padTo2Digits(d.getHours()),
+            padTo2Digits(d.getMinutes()),
+            padTo2Digits(d.getSeconds()),
+        ].join(":")
+    );
+}
 
 exports.getdata = (req, res) => {
     let offset = 0;
@@ -28,11 +49,15 @@ exports.getdata = (req, res) => {
             let page = parseInt(req.query.page);
             let limit = parseInt(req.query.limit);
             let action_type = req.query.action_type;
-            const startDate = req.query.startDate;
-            const endDate = req.query.endDate;
-
-            console.log(startDate);
-            console.log(endDate);
+            let startDate;
+            let endDate;
+            if (!req.query.startDate || !req.query.endDate) {
+                startDate = dateformatter("2023-02-14 15:39:47");
+                endDate = dateformatter(Date.now());
+            } else {
+                startDate = dateformatter(req.query.startDate);
+                endDate = dateformatter(req.query.endDate);
+            }
             let pages = Math.ceil(data.count / limit);
             offset = limit * (page - 1);
             User.findAll({
@@ -43,19 +68,33 @@ exports.getdata = (req, res) => {
                     "created_at",
                 ],
                 where: {
-                    created_at: {
-                        [Op.between]: [startDate, endDate],
-                    },
-                    action_type: {
-                        [Op.like]: `%${action_type}%`,
-                    },
+                    [Op.or]: [
+                        {
+                            action_type: {
+                                [Op.like]: `%${action_type}%`,
+                            },
+                        },
+                        {
+                            created_at: {
+                                [Op.between]: [startDate, endDate],
+                            },
+                        },
+                    ],
                 },
                 order: [["created_at", "ASC"]],
                 limit: limit,
                 offset: offset,
-            }).then((result) => {
+            }).then(async (results) => {
+                const accessLogStream = rfs.createStream("logs.csv", {
+                    interval: "1M", // rotate monthly    compress: true,
+                    path: path.join("tmp", "log"),
+                });
+
+                results.forEach(async (result) => {
+                    await accessLogStream.write(JSON.stringify(result) + "\n");
+                });
                 res.status(200).json({
-                    data: result,
+                    data: results,
                     count: data.count,
                     currentPage: page,
                     overallPages: pages,
