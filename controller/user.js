@@ -49,13 +49,16 @@ exports.getdata = (req, res) => {
             let page = parseInt(req.query.page);
             let limit = parseInt(req.query.limit);
             let action_type = req.query.action_type;
+
             let startDate;
             let endDate;
+            if (!req.query.action_type) {
+                //. represents any character / * represents zero or more characters
+                action_type = `.*`;
+            }
             if (!req.query.startDate || !req.query.endDate) {
                 startDate = dateformatter("2023-02-14 15:39:47");
                 endDate = dateformatter(Date.now());
-                console.log(startDate);
-                console.log(endDate);
             } else {
                 startDate = dateformatter(req.query.startDate);
                 endDate = dateformatter(req.query.endDate);
@@ -69,16 +72,17 @@ exports.getdata = (req, res) => {
                     "action_description",
                     "created_at",
                 ],
+
                 where: {
                     [Op.or]: [
                         {
-                            created_at: {
-                                [Op.between]: [startDate, endDate],
+                            action_type: {
+                                [Op.regexp]: action_type,
                             },
                         },
                         {
-                            action_type: {
-                                [Op.like]: `%${action_type}%`,
+                            created_at: {
+                                [Op.between]: [startDate, endDate],
                             },
                         },
                     ],
