@@ -1,20 +1,13 @@
-const { Sequelize, DataTypes } = require("sequelize");
-
-const sequelize = new Sequelize("assignment", "root", "password", {
+module.exports = {
     host: "localhost",
+    user: "root",
+    password: "password",
     dialect: "mysql",
-});
-
-sequelize
-    .authenticate()
-    .then(() => {
-        console.log("Connected Successfully");
-    })
-    .catch((error) => {
-        console.log("Unable to connect to a database!", +error);
-    });
-
-const db = {};
-db.Sequelize = Sequelize;
-db.sequelize = sequelize;
-db.users = require("../model/users")(sequelize, DataTypes);
+    database: "eventlog",
+    pool: {
+        max: 5,
+        min: 0,
+        acquire: 30000,
+        idle: 10000,
+    },
+};
