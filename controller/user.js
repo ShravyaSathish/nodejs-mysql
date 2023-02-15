@@ -2,6 +2,7 @@ const db = require("../model");
 // const DATE_FORMATER = require("dateformat");
 const path = require("path");
 const rfs = require("rotating-file-stream");
+const fs = require('fs')
 const User = db.users;
 const Op = db.Sequelize.Op;
 exports.adduserinfo = (req, res) => {
@@ -91,20 +92,26 @@ exports.getdata = (req, res) => {
                 limit: limit,
                 offset: offset,
             }).then(async (results) => {
-                const accessLogStream = rfs.createStream("logs.csv", {
-                    interval: "1M", // rotate monthly    compress: true,
-                    path: path.join("tmp", "log"),
-                });
+                let writeStream = fs.createWriteStream('tmp/logs.csv')
+                results.forEach(async(result)=>{
+                    writeStream.write(JSON.stringify(result) + '\n')
 
-                results.forEach(async (result) => {
-                    await accessLogStream.write(JSON.stringify(result) + "\n");
-                });
-                res.status(200).json({
-                    data: results,
-                    count: data.count,
-                    currentPage: page,
-                    overallPages: pages,
-                });
+                })
+                writeStream.end()
+                writeStream.on('finish', ()=>{
+                    res.status(200).json({
+                        data: results,
+                        count: data.count,
+                        currentPage: page,
+                        overallPages: pages,
+                    });
+                }).on('error', (err)=>{
+                    res.send({message:"error"})
+                })
+              
+
+                
+                
             });
         })
         .catch((error) => {
